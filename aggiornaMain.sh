@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#Questo script aggiorna la directory di github (~/Documenti/GitHub_projects/ADM-HW2)
+#Questo script aggiorna il main aggiungendo le modifiche fatte al branch
 
 #Si sposta nella directory di git
-cd ~/Documenti/GitHub_projects/ADM-HW2
+cd ~/DIRECTORYPATH/ADM-HW2
 
 #aggiorna il branch
 ./updateBranch.sh
@@ -11,8 +11,8 @@ cd ~/Documenti/GitHub_projects/ADM-HW2
 #seleziona il branch da modificare
 git checkout main
 
-#esegue il merge dei due branch (main e ame)
-git merge ame
+#esegue il merge dei due branch
+git merge #branch name
 
 #carica le modifiche fatte nello stage		
 git add * 

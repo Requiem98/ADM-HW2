@@ -19,15 +19,8 @@ for i in $log
 done
 
 #aggiorna la directory 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-git push origin ame
-=======
-git push origin #branch name
->>>>>>> 921003dc3d7ea2cd96da0623033ecae0c1d39e10
-=======
 
 git push origin ame
 
->>>>>>> 3b5501ccc8d1303fd1fd9bee894c14932507d099
+
 

@@ -3,7 +3,7 @@
 #Questo script aggiorna il main aggiungendo le modifiche fatte al branch
 
 #Si sposta nella directory di git
-cd ~/DIRECTORYPATH/ADM-HW2
+cd ~/Documenti/GitHub_projects/ADM-HW2
 
 #aggiorna il branch
 ./updateBranch.sh
@@ -12,7 +12,7 @@ cd ~/DIRECTORYPATH/ADM-HW2
 git checkout main
 
 #esegue il merge dei due branch
-git merge #branch name
+git merge ame
 
 #carica le modifiche fatte nello stage		
 git add * 

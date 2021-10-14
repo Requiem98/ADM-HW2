@@ -19,5 +19,5 @@ for i in $log
 done
 
 #aggiorna la directory 		
-git push origin main
+git push origin #branch name
 

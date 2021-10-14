@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#Questo script aggiorna la directory di github (~/Documenti/GitHub_projects/ADM-HW2)
+
+#Si sposta nella directory di git
+cd ~/Documenti/GitHub_projects/ADM-HW2
+
+#aggiorna il branch
+./updateBranch.sh
+
+#seleziona il branch da modificare
+git checkout main
+
+#esegue il merge dei due branch (main e ame)
+git merge ame
+
+#carica le modifiche fatte nello stage		
+git add * 
+
+#Controlla che non siano stati eliminati dei file dalla directory		 
+log=`git commit -m "aggiornato" | awk '/eliminato:/{print $2}'`
+
+#se li trova li elimina da git		
+for i in $log
+	do
+		git rm $i; git commit -m "aggiornato"
+	
+done
+
+#aggiorna repository remota
+git push origin main
+
+
+

@@ -20,6 +20,6 @@ done
 
 #aggiorna la directory 		
 
-git push origin ame
+git push origin #branch name
 
 

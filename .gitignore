@@ -128,13 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
 #dataset
-
 *.csv
 
 #script
-
 *.sh
-
 

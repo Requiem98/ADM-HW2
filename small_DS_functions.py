@@ -21,7 +21,7 @@ def numbersOfReviewForTime(interv):
     finally:
         steam.reset_index(inplace=True)
     
-    return out
+    return out, dic
 
 def datetime_range(start, end, delta):
     delta = timedelta(minutes=delta)

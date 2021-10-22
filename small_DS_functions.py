@@ -40,4 +40,4 @@ def datetime_range(start, end, delta):
     return t    
 
 
-steam = pd.read_csv("./steam_reviews.csv", header="infer", nrows=2000, index_col=0, parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse);
+steam = pd.read_csv("./steam_reviews.csv", header="infer", nrows=20000, index_col=0, parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse);

@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import swifter
+import dask
+import dask.dataframe as dd
 from datetime import *
 from collections import *
 import matplotlib.pyplot as plt
@@ -40,4 +43,4 @@ def datetime_range(start, end, delta):
     return t    
 
 
-steam = pd.read_csv("./steam_reviews.csv", header="infer", index_col=0, parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse);
+steam = pd.read_csv("./steam_reviews.csv", header="infer", parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse, index_col=0)

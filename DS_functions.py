@@ -53,7 +53,7 @@ def numbersOfReviewByTime(interv):
     finally:
         steam.reset_index(inplace=True)
     
-    return out
+    return out, dic
 
 ## RQ6 functions ##
 

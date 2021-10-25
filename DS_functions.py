@@ -31,6 +31,69 @@ def datetime_range(start, end, delta):
     t = np.array(dts).reshape((len(dts)//2),2)
     return t 
 
+## RQ2 functions ##
+
+def numbersOfReviewsByApplication(n=0):
+    #Create a slice of the dataframe with the column "app_name" and "review_id" and than group it by "app_name"
+    #Sorting the result and take n rows
+    
+    #If i want just a part of the dataset...
+    if(n != 0):
+        numbersOfReviewsByApp = steam[["app_name", "review_id"]].groupby(["app_name"]).count().sort_values(["review_id"], ascending=True).tail(n)
+    #else...
+    else:
+        numbersOfReviewsByApp = steam[["app_name", "review_id"]].groupby(["app_name"]).count().sort_values(["review_id"], ascending=True)
+
+    #get the data for the barplot
+    height = numbersOfReviewsByApp["review_id"].array
+    val = numbersOfReviewsByApp.index
+
+    #fancy color =) 
+    my_cmap = plt.get_cmap('Greys')
+    my_norm = plt.Normalize(vmin=0,vmax=800000)
+
+    #plot the result
+    if(n != 0):
+        plt.figure(figsize=(n*2,n*2))
+    else:
+        plt.figure(figsize=(70,70))
+        
+    plt.barh(val, height, color=my_cmap(my_norm(height)));
+    
+    return numbersOfReviewsByApp
+
+
+def scoreOfApps(n=0):
+    #Create a slice of the dataframe with the column "app_name" and "weighted_vote_score" and than group it by "app_name"
+    #Get just the max of each group and than sort
+    
+    #If i want just a part of the dataset...
+    if(n != 0):
+        appScore = steam[["app_name", "weighted_vote_score"]].groupby(["app_name"]).max().sort_values(["weighted_vote_score"], ascending=False).head(n)
+        
+    #else...
+    else:
+        appScore = steam[["app_name", "weighted_vote_score"]].groupby(["app_name"]).max().sort_values(["weighted_vote_score"], ascending=False)
+    
+    return appScore
+
+def raccomendedApp_purchase_free(h=0, t=0):
+    
+    #If i want all the dataset t = 0
+    if(t == 0):
+        raccomendedApp = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False)
+    
+    #else i want the first h and the last t
+    else:
+        
+        #get the first h
+        raccomendedApp = raccomendedApp = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False).head(5)
+    
+        #get the last t and concat it to the dataframe
+        raccomendedApp = pd.concat([raccomendedApp, steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False).tail(t)])
+    
+    return raccomendedApp
+    
 ## RQ3 functions ##
 
 def numbersOfReviewByTime(interv):
@@ -48,12 +111,14 @@ def numbersOfReviewByTime(interv):
             dic[x[0] + "-" + x[1]] = len(steam.between_time(x[0], x[1]))
     
         #plot the result
-        out = plt.bar(dic.keys(), dic.values());
+        plt.figure(figsize=(6*len(interv),2*len(interv)))
+        plt.bar(dic.keys(), dic.values());
+        
 
     finally:
         steam.reset_index(inplace=True)
     
-    return out, dic
+    return dic
 
 ## RQ6 functions ##
 
@@ -75,15 +140,19 @@ def numberOfUpdateByAuthor():
 	
 	return authorMOD
 	
-def plotBestAuthor_updater(n):
+def plotBestAuthor_updater(n = 1):
     #Sorting the numbers of updates and take the first n
-	authorMOD_sortedHead =  numberOfUpdateForAuthor().sort_values(["Number of update"], ascending=False).head(n)
+    authorMOD_sortedHead = numberOfUpdateByAuthor().sort_values(["Number of update"], ascending=False).head(n)
+
+    if(n!=0):
+        plt.figure(figsize=(n*6,n*2))
+    else:
+        plt.figure(figsize=(120,40))
     
-    #Plot the result
-	plt.bar(list(map(str,authorMOD_sortedHead.index)), authorMOD_sortedHead["Number of update"]);
+    plt.bar(list(map(str,authorMOD_sortedHead.index)), authorMOD_sortedHead["Number of update"]);
 	
-	return authorMOD_sortedHead
-	
+    return authorMOD_sortedHead
+
 def numberOfNonUpdateReviewsByAuthor():
 	#Get the author.steamID column
 	author_steamId_AND_timedelta = steam[["author.steamid"]]
@@ -111,8 +180,8 @@ def numberOfUpdateAndNonUpdateByAuthor(n):
 	AuthorTOT = author_steamId_AND_timedelta.groupby(["author.steamid"]).count()
     
     #Adding the Numbers of updates and numbers of not updates
-	AuthorTOT["Number of update"] =  numberOfUpdateForAuthor()
-	AuthorTOT["Number of not update"] = numberOfNonUpdateReviewsForAuthor()
+	AuthorTOT["Number of update"] =  numberOfUpdateByAuthor()
+	AuthorTOT["Number of not update"] = numberOfNonUpdateReviewsByAuthor()
 	
     #compute the percentage of updating of the authors
 	perc = AuthorTOT.apply(lambda row: (row["Number of update"]/row["TOT"])*100,axis=1)

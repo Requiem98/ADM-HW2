@@ -13,16 +13,19 @@ import warnings
 def dateparse(time_as_a_unix_timestamp):
     return pd.to_datetime(time_as_a_unix_timestamp, unit='s')
 
-
-def datetime_range(start, end, delta):
-    #This function return a list of time intevals
+# This function return a list of time intevals on 24h
+# Input: 
+#     startM: starting minutes
+#     endM: ending minutes
+#
+def datetime_range24(startM=0, endM=0, delta=60): 
     delta = timedelta(minutes=delta)
-    start = datetime(2020, 10, 26, start)
-    end = datetime(2020, 10, 26, end)
+    start = datetime(2020, 10, 26, 0, startM)
+    end = datetime(2020, 10, 27, 0, endM)
     dts = list()
     current = start
 
-    while current < end:
+    while current <= end:
         dts.append(current.strftime('%H:%M'))
         dts.append(current.strftime('%H:%M'))
         current += delta
@@ -50,13 +53,12 @@ def numbersOfReviewsByApplication(n=0):
 
     #fancy color =) 
     my_cmap = plt.get_cmap('Greys')
-    my_norm = plt.Normalize(vmin=0,vmax=800000)
+    my_norm = plt.Normalize(vmin=0,vmax=(numbersOfReviewsByApp["review_id"].max())*0.2)
 
     #plot the result
-    if(n != 0):
-        plt.figure(figsize=(n*2,n*2))
-    else:
-        plt.figure(figsize=(70,70))
+
+    plt.figure(figsize=(30,5))
+
         
     plt.barh(val, height, color=my_cmap(my_norm(height)));
     
@@ -111,9 +113,14 @@ def numbersOfReviewByTime(interv):
             dic[x[0] + "-" + x[1]] = len(steam.between_time(x[0], x[1]))
     
         #plot the result
-        plt.figure(figsize=(6*len(interv),2*len(interv)))
-        plt.bar(dic.keys(), dic.values());
-        
+        my_cmap = plt.get_cmap('Greys')
+        my_norm = plt.Normalize(vmin=max(dic.values())*0.2)
+        plt.figure(figsize=(30,5))
+        plt.bar(dic.keys(), dic.values(), color=my_cmap(my_norm(list(dic.values()))));
+        plt.grid()
+        plt.xticks(rotation="vertical")
+        plt.xlabel("Time intervals", labelpad=25.0, size="xx-large")
+        plt.ylabel("Number of reviews", labelpad=25.0, size="xx-large")
 
     finally:
         steam.reset_index(inplace=True)
@@ -144,12 +151,16 @@ def plotBestAuthor_updater(n = 1):
     #Sorting the numbers of updates and take the first n
     authorMOD_sortedHead = numberOfUpdateByAuthor().sort_values(["Number of update"], ascending=False).head(n)
 
-    if(n!=0):
-        plt.figure(figsize=(n*6,n*2))
-    else:
-        plt.figure(figsize=(120,40))
+    my_cmap = plt.get_cmap('Greys')
+    my_norm = plt.Normalize(vmin=(authorMOD_sortedHead["Number of update"].max())*0.2)
     
-    plt.bar(list(map(str,authorMOD_sortedHead.index)), authorMOD_sortedHead["Number of update"]);
+    plt.figure(figsize=(30,5))
+    plt.bar(list(map(str,authorMOD_sortedHead.index)), authorMOD_sortedHead["Number of update"], color=my_cmap(my_norm(authorMOD_sortedHead["Number of update"].array)));
+    plt.grid()
+    plt.xlabel("Steam ID", labelpad=25.0, size="xx-large")
+    plt.ylabel("Number of updates", labelpad=25.0, size="xx-large")
+    if(n > 8):
+        plt.xticks(rotation="vertical")
 	
     return authorMOD_sortedHead
 

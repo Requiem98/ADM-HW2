@@ -2,7 +2,7 @@
 
 TODO:
 
-  -Rimuovere riga timedelta negativa
-  -Commentare codice
-  -Aggiungere descrizioni esercizi
+  - Rimuovere riga timedelta negativa
+  - Commentare codice
+  - Aggiungere descrizioni esercizi
 

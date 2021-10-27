@@ -1,5 +1,8 @@
 # ADM-HW2
 
-test
-sss
+TODO:
+
+  -Rimuovere riga timedelta negativa
+  -Commentare codice
+  -Aggiungere descrizioni esercizi
 

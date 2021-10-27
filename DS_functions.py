@@ -7,6 +7,10 @@ from datetime import *
 from collections import *
 import matplotlib.pyplot as plt
 import warnings
+import scipy
+from scipy.stats import t
+from sklearn import linear_model as  lm
+import seaborn as sns
 
 ## Generic functions ##
 
@@ -32,7 +36,23 @@ def datetime_range24(startM=0, endM=0, delta=60):
     
     dts = dts[1:(len(dts)-1)]
     t = np.array(dts).reshape((len(dts)//2),2)
-    return t 
+    return t
+
+## RQ1 functions ##
+
+#Compute the heatmap of null values for each of the columns of the dataset
+"""da modificare"""
+def nullHeatMap():
+    return sns.heatmap(steam.isnull(),cbar=True,yticklabels=False,cmap = 'viridis')
+
+#Functions that shows the main characteristics of quantitative variables
+# Output: 
+#    -Dataframe
+#    -boxplot
+def statisticalIndex():
+    data = round(steam.iloc[:,[8,9,10,11,16,17,18,19,20]].describe(),3)
+    box = steam.iloc[:,[8,9,10,11,16,17]].plot.box(subplots=True,figsize=(20,8));
+    return data, box
 
 ## RQ2 functions ##
 
@@ -244,3 +264,7 @@ def probabilityQuestion3():
 
 
 steam = pd.read_csv("./steam_reviews.csv", header="infer", parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse, index_col=0)
+
+steam['author.playtime_last_two_weeks']=pd.to_timedelta(steam['author.playtime_last_two_weeks'], unit='m')
+steam['author.playtime_forever']=pd.to_timedelta(steam['author.playtime_forever'], unit='m')
+steam['author.playtime_at_review']=pd.to_timedelta(steam['author.playtime_at_review'], unit='m')

@@ -263,7 +263,7 @@ def probabilityQuestion3():
 
 
 
-steam = pd.read_csv("./steam_reviews.csv", header="infer", parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse, index_col=0)
+steam = pd.read_csv("./steam_reviews.csv", header="infer", parse_dates=['timestamp_created', 'timestamp_updated', 'author.last_played'], date_parser=dateparse, index_col=0,nrows=20)
 
 steam['author.playtime_last_two_weeks']=pd.to_timedelta(steam['author.playtime_last_two_weeks'], unit='m')
 steam['author.playtime_forever']=pd.to_timedelta(steam['author.playtime_forever'], unit='m')

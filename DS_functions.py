@@ -51,7 +51,7 @@ def datetime_range24(startM=0, endM=0, delta=60):
 #Compute the heatmap of null values for each of the columns of the dataset
 """da modificare"""
 def nullHeatMap():
-    return sns.heatmap(steam.isnull(),cbar=True,yticklabels=False,cmap = 'viridis')
+    return sns.heatmap(steam[[4,18,19,20,21]].isnull(),cbar=True,yticklabels=False,cmap = 'viridis')
 
 #Functions that shows the main characteristics of quantitative variables
 # Output: 

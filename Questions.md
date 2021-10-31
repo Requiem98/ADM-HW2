@@ -58,7 +58,7 @@ ____
 |00:00:00 | 02:59:59|
 |03:00:00 | 05:59:59|
 
-5. [**RQ4**] *As Steam is a worldwide platform, the reviews can be done in many languages. Let's extract some information about it.*
+4. [**RQ4**] *As Steam is a worldwide platform, the reviews can be done in many languages. Let's extract some information about it.*
     - What are the top 3 languages used to review applications?
     - Create a function that receives as parameters both the name of a data set and a list of languages’ names and returns a data frame filtered only with the reviews written in the provided languages.
     - Use the function created in the previous literal to find what percentage of these reviews (associated with the top 3 languages) were voted as funny?

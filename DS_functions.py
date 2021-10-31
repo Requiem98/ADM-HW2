@@ -420,17 +420,17 @@ def percentageOfHelpful(n):
 def mostPopularReviewers_local(n):
     return steam[["author.steamid", "review_id"]].groupby(["author.steamid"]).count().sort_values("review_id",ascending=False).head(n)
 
-def mostPopularReviewers_global(n):
-    return steam[["author.steamid", "author.num_reviews"]].groupby(["author.steamid"]).first().sort_values("author.num_reviews",ascending=False).head(n)
+"""def mostPopularReviewers_global(n):
+    return steam[["author.steamid", "author.num_reviews"]].groupby(["author.steamid"]).first().sort_values("author.num_reviews",ascending=False).head(n)"""
 
 #Plot the result fo the "mostPopularReviews" function
 def mostPopularReviewers_plot(n):
     
     #get the data from the "mostPopularReviews" function
-    data = mostPopularReviewers(n)
+    data = mostPopularReviewers_local(n)
     
     #get the values and the height of the values from the dataset
-    height = data["author.num_reviews"].array
+    height = data["review_id"].array
     val = list(map(str,data.index))
 
     #map the colors with the height
@@ -454,13 +454,19 @@ def reviewedApplicationFromTheMostPopularReviewer():
 
 def percentageOfReceived():
     
+    tot_Reviews = steam[["author.steamid", "review_id"]].groupby(["author.steamid"], as_index=False).count()
+    
+    tot_Reviews = tot_Reviews[tot_Reviews["author.steamid"] == mostPopularReviewers_local(1).index[0]]
+    
     freeAndPurchase = steam[['author.steamid', "steam_purchase", "received_for_free"]].groupby('author.steamid', as_index=False).sum()
     
-    freeAndPurchase = freeAndPurchase[freeAndPurchase['author.steamid']==mostPopularReviewers(1).index[0]]
+    freeAndPurchase = freeAndPurchase[freeAndPurchase['author.steamid']==mostPopularReviewers_local(1).index[0]]
     
-    percPurchase = freeAndPurchase[["steam_purchase", "received_for_free"]].apply(lambda row: row["steam_purchase"]/(row["steam_purchase"] + row["received_for_free"]),axis=1)
+    freeAndPurchase["tot reviews"] = tot_Reviews["review_id"]
     
-    percFree = freeAndPurchase[["steam_purchase", "received_for_free"]].apply(lambda row: row["received_for_free"]/(row["steam_purchase"] + row["received_for_free"]),axis=1)
+    percPurchase = freeAndPurchase[["steam_purchase", "received_for_free", "tot reviews"]].swifter.apply(lambda row: row["steam_purchase"]/(row["tot reviews"]),axis=1)
+    
+    percFree = freeAndPurchase[["steam_purchase", "received_for_free", "tot reviews"]].swifter.apply(lambda row: row["received_for_free"]/(row["tot reviews"]),axis=1)
     
     final = freeAndPurchase
     
@@ -477,7 +483,7 @@ def percentageOfReceived():
 #  -received_for_free: number of app received for free that are reccomanded or not 
 def recommendedApp_purchasedAndFree():
     data = steam[['author.steamid', "recommended", "steam_purchase", "received_for_free"]]
-    data = data[data['author.steamid']==mostPopularReviewers(1).index[0]]
+    data = data[data['author.steamid']==mostPopularReviewers_local(1).index[0]]
     return data.groupby("recommended", as_index=False).sum(numeric_only=True).drop(["author.steamid"], axis=1)
 
 
@@ -625,16 +631,15 @@ def probabilityQuestion4():
 
 # F | (C u A)
 def probabilityQuestion5():
-	#NUmber of total cases
-    tot = steam[(steam["weighted_vote_score"] >= 0.5)]
-    	
-	#Number of favorable cases
-	fav = steam[(steam.votes_funny > 0) & (steam["weighted_vote_score"] >= 0.5)]
-	
-	#Computing the probability...
-	p = fav/tot
-bb
-	return p
+    #NUmber of total cases
+    tot = steam[(steam["weighted_vote_score"] >= 0.5)].shape[0]
+    #Number of favorable cases
+    fav = steam[(steam.votes_funny > 0) & (steam["weighted_vote_score"] >= 0.5)].shape[0]
+    
+    #Computing the probability...
+    p = fav/tot
+    
+    return p
 
 
 

@@ -12,6 +12,7 @@ import scipy
 from scipy.stats import t
 from sklearn import linear_model as  lm
 import seaborn as sns
+import statsmodels.api as sm
 
 """============================================================================================================================"""
 
@@ -450,7 +451,7 @@ def mostPopularReviewers_plot(n):
 
 #function that return a list of games that the most popular reviewer reviewed
 def reviewedApplicationFromTheMostPopularReviewer():
-    return steam[steam['author.steamid']==mostPopularReviewers(1).index[0]].app_name
+    return steam[steam['author.steamid']==mostPopularReviewers_local(1).index[0]].app_name
 
 def percentageOfReceived():
     
@@ -641,6 +642,101 @@ def probabilityQuestion5():
     
     return p
 
+"""============================================================================================================================"""
+
+"""RQ8 functions""" 
+
+"""============================================================================================================================"""
+
+
+def chinese_russian_hists():
+    fig, ax = plt.subplots(1,2)
+    fig.set_size_inches(20,10)
+    
+    h1 = steam.loc[steam['language']=='schinese','weighted_vote_score']
+    h2 = steam.loc[steam['language']=='russian','weighted_vote_score']
+    
+    var1 = h1.var()
+    var2 = h2.var()
+    
+    lab1 = "Variance: " + str(var1)
+    lab2 = "Variance: " + str(var2)
+    
+    n1, bins1, patches1 = ax[0].hist(h1, bins = 35, label=lab1)
+    n2, bins2, patches2 = ax[1].hist(h2, bins = 35, label=lab2)
+    
+    
+    my_cmap = plt.get_cmap('Greys')
+    
+    col1 = (n1-n1.min())/((n1.max()-n1.min())*0.4)
+    col2 = (n2-n2.min())/((n2.max()-n2.min())*0.4)
+ 
+    for c, p in zip(col1, patches1):
+        plt.setp(p, 'facecolor', my_cmap(c))
+        
+    for c, p in zip(col2, patches2):
+        plt.setp(p, 'facecolor', my_cmap(c))
+        
+        
+    for x in ax.flat:
+        x.legend();
+    
+    return var1, var2
+
+
+def chinese_russian_hists2():
+    fig, ax = plt.subplots(1,2)
+    fig.set_size_inches(20,10)
+    
+    h1 = steam.loc[(steam['language']=='schinese') & (steam['weighted_vote_score']!=0),'weighted_vote_score']
+    h2 = steam.loc[(steam['language']=='russian') & (steam['weighted_vote_score']!=0),'weighted_vote_score']
+    
+    var1 = h1.var()
+    var2 = h2.var()
+    
+    lab1 = "Variance: " + str(var1)
+    lab2 = "Variance: " + str(var2)
+    
+    n1, bins1, patches1 = ax[0].hist(h1, bins = 35, label=lab1)
+    n2, bins2, patches2 = ax[1].hist(h2, bins = 35, label=lab2)
+    
+    
+    
+    
+    my_cmap = plt.get_cmap('Greys')
+    
+    col1 = (n1-n1.min())/((n1.max()-n1.min())*0.2)
+    col2 = (n2-n2.min())/((n2.max()-n2.min())*0.2)
+ 
+    for c, p in zip(col1, patches1):
+        plt.setp(p, 'facecolor', my_cmap(c))
+        
+    for c, p in zip(col2, patches2):
+        plt.setp(p, 'facecolor', my_cmap(c))
+        
+        
+    for x in ax.flat:
+        x.legend(facecolor="k", labelcolor="w", framealpha=1, ncol=2);
+
+    return var1, var2
+
+
+def t_test():
+    china= steam.loc[(steam['language']=='schinese') & (steam['weighted_vote_score']!=0),'weighted_vote_score']
+   
+    russia= steam.loc[(steam['language']=='russian') & (steam['weighted_vote_score']!=0),'weighted_vote_score']
+    
+    out = scipy.stats.ttest_ind(china,russia,equal_var=False)
+    
+    return out
+
+
+
+"""============================================================================================================================"""
+
+"""DATASET LOAD""" 
+
+"""============================================================================================================================"""
 
 
 #Load the dataset and parse the dates

@@ -198,22 +198,30 @@ def scoreOfApps(n=0):
     
     return appScore
 
-def raccomendedApp_purchase_free(h=0, t=0):
+def reccomendedApp_purchase_free(h=0, t=0):
     
     #If i want all the dataset t = 0
     if(t == 0):
-        raccomendedApp = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False)
-    
+        reccomendedApp_Final = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum()
+        temp = steam[["app_name", "review_id"]].groupby("app_name").count()
+        reccomendedApp_Final["TOT reviews"] = temp
+        reccomendedApp_Final["percentage of reccommended"] = reccomendedApp_Final.swifter.apply(lambda row: row["recommended"]/row["TOT reviews"], axis=1)
+        reccomendedApp_Final = reccomendedApp_Final.sort_values(["percentage of reccommended", "TOT reviews"], ascending=False)
     #else i want the first h and the last t
     else:
         
-        #get the first h
-        raccomendedApp = raccomendedApp = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False).head(5)
-    
-        #get the last t and concat it to the dataframe
-        raccomendedApp = pd.concat([raccomendedApp, steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum().sort_values(["recommended"], ascending=False).tail(t)])
-    
-    return raccomendedApp
+        reccomendedApp = steam[["app_name", "recommended", "received_for_free", "steam_purchase"]].groupby(["app_name"]).sum()
+        temp = steam[["app_name", "review_id"]].groupby("app_name").count()
+        reccomendedApp["TOT reviews"] = temp
+        
+        reccomendedApp["percentage of reccommended"] = reccomendedApp.swifter.apply(lambda row: row["recommended"]/row["TOT reviews"], axis=1)
+        
+        reccomendedApp = reccomendedApp.sort_values(["percentage of reccommended", "TOT reviews"], ascending=False)
+        
+        reccomendedApp_Final = reccomendedApp.head(h)
+        reccomendedApp_Final = pd.concat([reccomendedApp_Final, reccomendedApp.tail(t)])
+        
+    return reccomendedApp_Final
     
 """============================================================================================================================"""
 
@@ -357,8 +365,7 @@ def percentageOfFunny(n):
     #get the revies with at least one vote as funny
     warnings.filterwarnings("ignore")
     ones = filteredByLang[["votes_funny"]]
-    ones.where(filteredByLang.votes_funny != 0, inplace=True)
-    ones = ones.dropna()
+    ones = ones[ones.votes_funny != 0]
     #Group it by language
     ones = ones.groupby(["language"]).count()
     #get the total number of reviews by language
@@ -388,8 +395,7 @@ def percentageOfHelpful(n):
     #get the revies with at least one vote as helpful
     warnings.filterwarnings("ignore")
     ones = filteredByLang[["votes_helpful"]]
-    ones.where(filteredByLang.votes_funny != 0, inplace=True)
-    ones = ones.dropna()
+    ones = ones[ones.votes_helpful != 0]
     #Group it by language
     ones = ones.groupby(["language"]).count()
     #get the total number of reviews by language
@@ -411,7 +417,10 @@ def percentageOfHelpful(n):
 
 
 #Return a dataframe with the steam_id as index and the number of reviews of the author as column
-def mostPopularReviewers(n):
+def mostPopularReviewers_local(n):
+    return steam[["author.steamid", "review_id"]].groupby(["author.steamid"]).count().sort_values("review_id",ascending=False).head(n)
+
+def mostPopularReviewers_global(n):
     return steam[["author.steamid", "author.num_reviews"]].groupby(["author.steamid"]).first().sort_values("author.num_reviews",ascending=False).head(n)
 
 #Plot the result fo the "mostPopularReviews" function
@@ -561,6 +570,7 @@ def numberOfUpdateAndNonUpdateByAuthor(n):
 
 """============================================================================================================================"""
 
+# A
 def probabilityQuestion1():
 	#NUmber of total cases
 	tot = steam[["weighted_vote_score"]].shape[0]
@@ -573,19 +583,34 @@ def probabilityQuestion1():
 	
 	return p
 
+#Altro
 def probabilityQuestion2():
 	#NUmber of total cases
 	tot = steam[(steam["weighted_vote_score"] > 0.5)].shape[0]
 	
 	#Number of favorable cases
-	fav = steam[(steam["votes_funny"] > 0)].shape[0]
+	fav = steam[(steam.votes_funny > 0) & (steam.weighted_vote_score > 0.5)].shape[0]
 	
 	#Computing the probability...
 	p = fav/tot
 
 	return p
 
+# C
 def probabilityQuestion3():
+	#NUmber of total cases
+	tot = steam[["weighted_vote_score"]].shape[0]
+	
+	#Number of favorable cases
+	fav = steam[(steam["weighted_vote_score"] > 0.5)].shape[0]
+	
+	#Computing the probability...
+	p = fav/tot
+
+	return p
+
+# F
+def probabilityQuestion4():
 	#NUmber of total cases
 	tot = steam[["weighted_vote_score"]].shape[0]
 	
@@ -596,6 +621,21 @@ def probabilityQuestion3():
 	p = fav/tot
 
 	return p
+
+
+# F | (C u A)
+def probabilityQuestion5():
+	#NUmber of total cases
+    tot = steam[(steam["weighted_vote_score"] >= 0.5)]
+    	
+	#Number of favorable cases
+	fav = steam[(steam.votes_funny > 0) & (steam["weighted_vote_score"] >= 0.5)]
+	
+	#Computing the probability...
+	p = fav/tot
+bb
+	return p
+
 
 
 #Load the dataset and parse the dates

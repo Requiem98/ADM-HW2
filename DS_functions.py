@@ -141,6 +141,29 @@ def reviewsPieCharts():
         
     return sp, rec, rff, wea
 
+def correlationFunction():
+    warnings.filterwarnings("ignore")
+    corr = steam[["votes_helpful",	"votes_funny", "weighted_vote_score", "comment_count", "author.num_games_owned", "author.num_reviews", 'author.playtime_last_two_weeks', 'author.playtime_forever', 'author.playtime_at_review', "timestamp_updated", "timestamp_created", "author.last_played"]]
+
+    corr['timestamp_updated']= mdates.date2num(steam['timestamp_updated'])
+    corr['timestamp_created']= mdates.date2num(steam['timestamp_created'])
+    corr['author.last_played']= mdates.date2num(steam['author.last_played'])
+
+    corr['author.playtime_last_two_weeks']= steam['author.playtime_last_two_weeks'].swifter.progress_bar(False).apply(lambda row: row.total_seconds(), axis=1)
+    corr['author.playtime_forever']= steam['author.playtime_forever'].swifter.progress_bar(False).apply(lambda row: row.total_seconds(), axis=1)
+    corr['author.playtime_at_review']= steam['author.playtime_at_review'].swifter.progress_bar(False).apply(lambda row: row.total_seconds(), axis=1)
+
+    return corr.corr()
+
+def plot_correlationFunction():
+    
+    fig, ax1 = plt.subplots(1)
+    sns.heatmap(correlationFunction(), ax=ax1, cmap="Greys")
+    fig.set_size_inches(10,8)
+    fig.set_facecolor("ivory")
+    
+    return ax1
+
 
 """============================================================================================================================"""
 
@@ -583,7 +606,7 @@ def probabilityQuestion1():
 	tot = steam[["weighted_vote_score"]].shape[0]
 	
 	#Number of favorable cases
-	fav = steam[(steam["weighted_vote_score"] == 0.5)].shape[0]
+	fav = steam[(steam["weighted_vote_score"] >= 0.5)].shape[0]
 	
 	#Computing the probability...
 	p = fav/tot
@@ -603,21 +626,8 @@ def probabilityQuestion2():
 
 	return p
 
-# C
-def probabilityQuestion3():
-	#NUmber of total cases
-	tot = steam[["weighted_vote_score"]].shape[0]
-	
-	#Number of favorable cases
-	fav = steam[(steam["weighted_vote_score"] > 0.5)].shape[0]
-	
-	#Computing the probability...
-	p = fav/tot
-
-	return p
-
 # F
-def probabilityQuestion4():
+def probabilityQuestion3():
 	#NUmber of total cases
 	tot = steam[["weighted_vote_score"]].shape[0]
 	
@@ -630,8 +640,8 @@ def probabilityQuestion4():
 	return p
 
 
-# F | (C u A)
-def probabilityQuestion5():
+# F | A
+def probabilityQuestion4():
     #NUmber of total cases
     tot = steam[(steam["weighted_vote_score"] >= 0.5)].shape[0]
     #Number of favorable cases

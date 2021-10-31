@@ -730,6 +730,34 @@ def t_test():
     
     return out
 
+def regressionData():
+    steam_mod = steam[["weighted_vote_score"]]
+    steam_mod["recommended"] = steam['recommended'].swifter.apply(lambda row: row*1).astype(np.float)
+    steam_mod["timedelta"] = df.timedelta_updated_created().swifter.apply(lambda row: row.total_seconds())
+    steam_mod = steam_mod[steam_mod["weighted_vote_score"] != 0]
+    
+    
+def singleRegression():
+    X = steam_mod["timedelta"]
+    y=np.log(steam_mod['weighted_vote_score']/(1-steam_mod['weighted_vote_score']))
+
+    X = sm.add_constant(X)
+
+    model = sm.OLS(y,X).fit()
+
+    model.summary()
+    
+    
+def multipleRegression():
+    X = steam_mod[["timedelta", "recommended"]]
+    y=np.log(steam_mod['weighted_vote_score']/(1-steam_mod['weighted_vote_score']))
+
+    X = sm.add_constant(X)
+
+    model = sm.OLS(y,X).fit()
+
+    model.summary()
+
 
 
 """============================================================================================================================"""
